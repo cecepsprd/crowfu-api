@@ -1,0 +1,22 @@
+{
+  "app" : {
+    "name" : "Crowfu API",
+    "port" : ":9090"
+  },
+
+  "mongo" : {
+    "name" : "mservices",
+    "host" : "localhost",
+    "user" : "root",
+    "port" : "27017",
+    "password" : ""
+  },
+
+  "mysql" : {
+    "name" : "mservices",
+    "host" : "localhost",
+    "user" : "root",
+    "port" : "3306",
+    "password" : ""
+  }
+}
