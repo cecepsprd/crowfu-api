@@ -8,6 +8,9 @@ import (
 	"time"
 
 	"github.com/cecepsprd/crowfu-api/config"
+	"github.com/cecepsprd/crowfu-api/internal/api/v1/handler"
+	"github.com/cecepsprd/crowfu-api/internal/repository"
+	"github.com/cecepsprd/crowfu-api/internal/service"
 	"github.com/cecepsprd/crowfu-api/pkg/log"
 	"github.com/labstack/echo"
 )
@@ -17,16 +20,24 @@ func RunServer() {
 	cfg := config.LoadConfiguration()
 
 	// connect to database
-	// db, err := config.MysqlConnect(cfg)
-	// if err != nil {
-	// 	log.Fatal("error connecting to database: ", err.Error())
-	// }
+	db, err := config.MysqlConnect(cfg)
+	if err != nil {
+		log.Fatal("error connecting to database: ", err.Error())
+	}
 
 	// init echo
 	e := echo.New()
 
+	// repository
+	userRepo := repository.NewUserRepository(db)
+
+	// service
+	userService := service.NewServiceRepository(userRepo)
+
+	// handler
+	handler.NewUserHandler(e, userService)
+
 	// Starting Server
-	//
 	go func() {
 		err := e.Start(cfg.App.HttpPort)
 		if err != nil {

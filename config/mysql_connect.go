@@ -9,7 +9,7 @@ import (
 
 func MysqlConnect(cfg Config) (*sql.DB, error) {
 
-	dbConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
+	dbConnString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		cfg.MysqlDB.User,
 		cfg.MysqlDB.Password,
 		cfg.MysqlDB.Host,

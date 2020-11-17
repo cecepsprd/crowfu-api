@@ -3,6 +3,7 @@ module github.com/cecepsprd/crowfu-api
 go 1.15
 
 require (
+	github.com/cecepsprd/go-api-native v0.0.0-20200819193504-df6f6623cf0e
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/labstack/echo v3.3.10+incompatible
@@ -10,6 +11,7 @@ require (
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/pelletier/go-toml v1.8.1 // indirect
+	github.com/sirupsen/logrus v1.2.0
 	github.com/spf13/afero v1.4.1 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/cobra v1.1.1
