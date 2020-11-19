@@ -21,7 +21,8 @@ func NewUserHandler(e *echo.Echo, us service.UserService) {
 }
 
 func (u *UserHandler) GetListUser(c echo.Context) error {
-	listUser, err := u.userService.Get()
+	ctx := c.Request().Context()
+	listUser, err := u.userService.Get(ctx)
 	if err != nil {
 		return c.JSON(getStatusCode(err), model.ResponseError{Message: err.Error()})
 	}

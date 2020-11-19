@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 
 	"github.com/cecepsprd/crowfu-api/internal/model"
@@ -15,8 +16,8 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	return &userRepository{db}
 }
 
-func (u *userRepository) Get() ([]model.User, error) {
-	rows, err := u.DB.Query("SELECT id, name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at FROM user")
+func (u *userRepository) Get(ctx context.Context) ([]model.User, error) {
+	rows, err := u.DB.QueryContext(ctx, "SELECT id, name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at FROM user")
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -37,4 +38,40 @@ func (u *userRepository) Get() ([]model.User, error) {
 	}
 
 	return users, nil
+}
+
+func (u *userRepository) Save(c context.Context, user *model.User) (int64, error) {
+	query := `INSERT INTO filter_word(name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at) VALUE (?,?,?,?,?,?,?,?,?,?)`
+
+	res, err := u.DB.ExecContext(c, query)
+	if err != nil {
+		log.Error(err)
+		return 0, err
+	}
+
+	return res.RowsAffected()
+}
+
+func (u *userRepository) Update(c context.Context, id int64, user *model.User) (int64, error) {
+	query := `UPDATE user SET name=?, email=?, password=?, occupation=?, hash_password=?, avatar_file_name=?, role=?, token=?, updated_at=? WHERE id = ?`
+
+	res, err := u.DB.ExecContext(c, query)
+	if err != nil {
+		log.Error(err)
+		return 0, err
+	}
+
+	return res.RowsAffected()
+}
+
+func (u *userRepository) Delete(c context.Context, id int64) (int64, error) {
+	query := `DELETE FROM user WHERE id = ?`
+
+	res, err := u.DB.ExecContext(c, query)
+	if err != nil {
+		log.Error(err)
+		return 0, err
+	}
+
+	return res.RowsAffected()
 }

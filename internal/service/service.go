@@ -1,7 +1,11 @@
 package service
 
-import "github.com/cecepsprd/crowfu-api/internal/model"
+import (
+	"context"
+
+	"github.com/cecepsprd/crowfu-api/internal/model"
+)
 
 type UserService interface {
-	Get() ([]model.User, error)
+	Get(ctx context.Context) ([]model.User, error)
 }
