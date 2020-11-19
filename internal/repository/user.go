@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
+	"time"
 
 	"github.com/cecepsprd/crowfu-api/internal/model"
 	"github.com/cecepsprd/crowfu-api/pkg/log"
@@ -41,9 +43,9 @@ func (u *userRepository) Get(ctx context.Context) ([]model.User, error) {
 }
 
 func (u *userRepository) Save(c context.Context, user *model.User) (int64, error) {
-	query := `INSERT INTO filter_word(name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at) VALUE (?,?,?,?,?,?,?,?,?,?)`
+	query := `INSERT INTO user(name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at) VALUE (?,?,?,?,?,?,?,?,?,?)`
 
-	res, err := u.DB.ExecContext(c, query)
+	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.HashPassword, user.AvatarFileName, user.Role, user.Token, time.Now(), time.Now())
 	if err != nil {
 		log.Error(err)
 		return 0, err
@@ -52,22 +54,27 @@ func (u *userRepository) Save(c context.Context, user *model.User) (int64, error
 	return res.RowsAffected()
 }
 
-func (u *userRepository) Update(c context.Context, id int64, user *model.User) (int64, error) {
+func (u *userRepository) Update(c context.Context, id int64, user *model.User) error {
 	query := `UPDATE user SET name=?, email=?, password=?, occupation=?, hash_password=?, avatar_file_name=?, role=?, token=?, updated_at=? WHERE id = ?`
 
-	res, err := u.DB.ExecContext(c, query)
+	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.HashPassword, user.AvatarFileName, user.Role, user.Token, time.Now(), id)
 	if err != nil {
 		log.Error(err)
-		return 0, err
+		return err
 	}
 
-	return res.RowsAffected()
+	rowsAffected, err := res.RowsAffected()
+	if rowsAffected != 1 {
+		return errors.New("user not found :( ")
+	}
+
+	return err
 }
 
 func (u *userRepository) Delete(c context.Context, id int64) (int64, error) {
 	query := `DELETE FROM user WHERE id = ?`
 
-	res, err := u.DB.ExecContext(c, query)
+	res, err := u.DB.ExecContext(c, query, id)
 	if err != nil {
 		log.Error(err)
 		return 0, err

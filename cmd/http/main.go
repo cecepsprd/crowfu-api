@@ -32,7 +32,7 @@ func RunServer() {
 	userRepo := repository.NewUserRepository(db)
 
 	// service
-	userService := service.NewServiceRepository(userRepo, 10)
+	userService := service.NewServiceRepository(userRepo, 2*time.Second)
 
 	// handler
 	handler.NewUserHandler(e, userService)
