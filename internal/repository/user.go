@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"time"
 
 	"github.com/cecepsprd/crowfu-api/internal/model"
@@ -54,21 +53,16 @@ func (u *userRepository) Save(c context.Context, user *model.User) (int64, error
 	return res.RowsAffected()
 }
 
-func (u *userRepository) Update(c context.Context, id int64, user *model.User) error {
+func (u *userRepository) Update(c context.Context, id int64, user *model.User) (int64, error) {
 	query := `UPDATE user SET name=?, email=?, password=?, occupation=?, hash_password=?, avatar_file_name=?, role=?, token=?, updated_at=? WHERE id = ?`
 
 	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.HashPassword, user.AvatarFileName, user.Role, user.Token, time.Now(), id)
 	if err != nil {
 		log.Error(err)
-		return err
+		return 0, err
 	}
 
-	rowsAffected, err := res.RowsAffected()
-	if rowsAffected != 1 {
-		return errors.New("user not found :( ")
-	}
-
-	return err
+	return res.RowsAffected()
 }
 
 func (u *userRepository) Delete(c context.Context, id int64) (int64, error) {

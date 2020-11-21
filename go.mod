@@ -3,8 +3,10 @@ module github.com/cecepsprd/crowfu-api
 go 1.15
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20200907205600-7a23bdc65eef // indirect
 	github.com/cecepsprd/go-api-native v0.0.0-20200819193504-df6f6623cf0e
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.3.0 // indirect

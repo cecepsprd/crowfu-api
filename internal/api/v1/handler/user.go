@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/cecepsprd/crowfu-api/internal/helpers"
 	"github.com/cecepsprd/crowfu-api/internal/model"
 	"github.com/cecepsprd/crowfu-api/internal/service"
-	"github.com/cecepsprd/crowfu-api/pkg/log"
 	"github.com/labstack/echo"
 )
 
@@ -28,89 +28,79 @@ func (u *UserHandler) GetListUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	listUser, err := u.userService.Get(ctx)
 	if err != nil {
-		return c.JSON(getStatusCode(err), model.ResponseError{Message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, helpers.GetResponse(http.StatusInternalServerError, err))
 	}
 
-	c.Response().Header().Set(`X-Cursor`, "")
-	return c.JSON(http.StatusOK, listUser)
+	return c.JSON(http.StatusOK, helpers.GetResponse(http.StatusOK, listUser))
 }
 
-func (u *UserHandler) CreateUser(c echo.Context) error {
+func (u *UserHandler) CreateUser(c echo.Context) (err error) {
+	ctx := c.Request().Context()
+
 	var user model.User
-	err := c.Bind(&user)
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	if err := c.Bind(&user); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, helpers.GetResponse(http.StatusUnprocessableEntity, err))
 	}
 
-	// TODO:VALIDA HERE LATER
-	// ......
+	// Validate user
+	if err = user.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.GetResponse(http.StatusBadRequest, err))
+	}
 
-	ctx := c.Request().Context()
 	_, err = u.userService.Save(ctx, &user)
 	if err != nil {
-		return c.JSON(getStatusCode(err), model.ResponseError{Message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, helpers.GetResponse(http.StatusInternalServerError, err))
 	}
 
 	return c.JSON(http.StatusOK, user)
 }
 
 func (u *UserHandler) UpdateUser(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusNotFound, "")
+		return c.JSON(http.StatusNotFound, helpers.GetResponse(http.StatusNotFound))
 	}
 
 	var user model.User
-	err = c.Bind(&user)
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, err.Error())
+	if err = c.Bind(&user); err != nil {
+		return c.JSON(http.StatusUnprocessableEntity, helpers.GetResponse(http.StatusUnprocessableEntity, err))
 	}
 
-	// TODO:VALIDA HERE LATER
-	// ......
-
-	ctx := c.Request().Context()
-	err = u.userService.Update(ctx, int64(id), &user)
-	if err != nil {
-		return c.JSON(getStatusCode(err), model.ResponseError{Message: err.Error()})
+	// Validate user
+	if err = user.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, helpers.GetResponse(http.StatusBadRequest, err))
 	}
 
-	return c.JSON(http.StatusOK, user)
+	rowsAffected, err := u.userService.Update(ctx, int64(id), &user)
+	if rowsAffected != 1 {
+		return c.JSON(http.StatusNotFound, helpers.GetResponse(http.StatusNotFound))
+	}
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, helpers.GetResponse(http.StatusInternalServerError, err))
+	}
+
+	return c.JSON(http.StatusOK, helpers.GetResponse(http.StatusOK, user))
 }
 
 func (u *UserHandler) DeleteUser(c echo.Context) error {
+	ctx := c.Request().Context()
+
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusNotFound, "")
 	}
 
-	ctx := c.Request().Context()
-	ra, err := u.userService.Delete(ctx, int64(id))
-	if ra != 1 {
-		return c.JSON(http.StatusNotFound, model.ResponseError{Message: "user not found :( "})
+	rowsAffected, err := u.userService.Delete(ctx, int64(id))
+	if rowsAffected != 1 {
+		return c.JSON(http.StatusNotFound, helpers.GetResponse(http.StatusNotFound))
 	}
 
 	if err != nil {
-		return c.JSON(getStatusCode(err), model.ResponseError{Message: err.Error()})
+		return c.JSON(http.StatusInternalServerError, helpers.GetResponse(http.StatusInternalServerError, err))
 	}
 
-	return c.NoContent(http.StatusOK)
-}
-
-func getStatusCode(err error) int {
-	if err == nil {
-		return http.StatusOK
-	}
-
-	log.Error(err)
-	switch err {
-	case model.ErrInternalServerError:
-		return http.StatusInternalServerError
-	case model.ErrNotFound:
-		return http.StatusNotFound
-	case model.ErrConflict:
-		return http.StatusConflict
-	default:
-		return http.StatusInternalServerError
-	}
+	return c.JSON(http.StatusOK, helpers.GetResponse(http.StatusOK))
 }

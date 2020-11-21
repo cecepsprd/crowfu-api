@@ -32,7 +32,7 @@ func (us *userService) Save(c context.Context, u *model.User) (int64, error) {
 	return us.userRepo.Save(ctx, u)
 }
 
-func (us *userService) Update(c context.Context, id int64, u *model.User) error {
+func (us *userService) Update(c context.Context, id int64, u *model.User) (int64, error) {
 	ctx, cancel := context.WithTimeout(c, us.ctxTimeout)
 	defer cancel()
 	return us.userRepo.Update(ctx, id, u)
