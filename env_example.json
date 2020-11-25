@@ -18,5 +18,7 @@
     "user" : "root",
     "port" : "3306",
     "password" : ""
-  }
+  },
+
+  "secret_key" : "JUSTaSimpleMan"
 }
