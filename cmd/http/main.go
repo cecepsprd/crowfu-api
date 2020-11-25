@@ -33,9 +33,11 @@ func RunServer() {
 
 	// service
 	userService := service.NewServiceRepository(userRepo, 2*time.Second)
+	authService := service.NewService(userRepo)
 
 	// handler
 	handler.NewUserHandler(e, userService)
+	handler.NewAuthHandler(e, authService)
 
 	// Starting Server
 	go func() {

@@ -18,10 +18,10 @@ func NewUserHandler(e *echo.Echo, us service.UserService) {
 	handler := &UserHandler{
 		userService: us,
 	}
-	e.GET("/v1/users", handler.GetListUser)
-	e.POST("/v1/users", handler.CreateUser)
-	e.PUT("/v1/users/:id", handler.UpdateUser)
-	e.DELETE("/v1/users/:id", handler.DeleteUser)
+	e.GET("/v1/users", handler.GetListUser, Authentication)
+	e.POST("/v1/users", handler.CreateUser, Authentication)
+	e.PUT("/v1/users/:id", handler.UpdateUser, Authentication)
+	e.DELETE("/v1/users/:id", handler.DeleteUser, Authentication)
 }
 
 func (u *UserHandler) GetListUser(c echo.Context) error {
