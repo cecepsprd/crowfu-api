@@ -1,24 +1,21 @@
 {
-  "app" : {
-    "name" : "Crowfu API",
-    "port" : ":9090"
+  "app": {
+    "name": "Crowfu API",
+    "port": ":9090"
   },
-
-  "mongo" : {
-    "name" : "mservices",
-    "host" : "localhost",
-    "user" : "root",
-    "port" : "27017",
-    "password" : ""
+  "mongo": {
+    "name": "yourName",
+    "host": "localhost",
+    "user": "root",
+    "port": "27017",
+    "password": ""
   },
-
-  "mysql" : {
-    "name" : "crowfu",
-    "host" : "localhost",
-    "user" : "root",
-    "port" : "3306",
-    "password" : ""
+  "mysql": {
+    "name": "crowfu",
+    "host": "localhost",
+    "user": "root",
+    "port": "3306",
+    "password": ""
   },
-
-  "secret_key" : "JUSTaSimpleMan"
+  "secret_key": "aVeryVERYSimpLeMan"
 }

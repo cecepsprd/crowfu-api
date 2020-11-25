@@ -3,11 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"time"
 
 	"github.com/cecepsprd/crowfu-api/internal/model"
 	"github.com/cecepsprd/crowfu-api/pkg/log"
-	"golang.org/x/crypto/bcrypt"
 )
 
 type userRepository struct {
@@ -64,10 +62,8 @@ func (u *userRepository) GetByEmail(ctx context.Context, email string) (model.Us
 }
 
 func (u *userRepository) Save(c context.Context, user *model.User) (int64, error) {
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
-
 	query := `INSERT INTO user(name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at) VALUE (?,?,?,?,?,?,?,?,?,?)`
-	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, string(hashedPassword), user.AvatarFileName, user.Role, user.Token, time.Now(), time.Now())
+	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.Password, user.AvatarFileName, user.Role, user.Token, user.CreatedAt, user.UpdatedAt)
 	if err != nil {
 		log.Error(err)
 		return 0, err
@@ -77,10 +73,8 @@ func (u *userRepository) Save(c context.Context, user *model.User) (int64, error
 }
 
 func (u *userRepository) Update(c context.Context, id int64, user *model.User) (int64, error) {
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.MinCost)
-
 	query := `UPDATE user SET name=?, email=?, password=?, occupation=?, hash_password=?, avatar_file_name=?, role=?, token=?, updated_at=? WHERE id = ?`
-	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, string(hashedPassword), user.AvatarFileName, user.Role, user.Token, time.Now(), id)
+	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.Password, user.AvatarFileName, user.Role, user.Token, user.UpdatedAt, id)
 	if err != nil {
 		log.Error(err)
 		return 0, err
