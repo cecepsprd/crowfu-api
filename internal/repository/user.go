@@ -17,7 +17,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 }
 
 func (u *userRepository) Get(ctx context.Context) ([]model.User, error) {
-	rows, err := u.DB.QueryContext(ctx, "SELECT id, name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at FROM user")
+	rows, err := u.DB.QueryContext(ctx, "SELECT id, name, email, password, occupation, avatar_file_name, role, token, created_at, updated_at FROM user")
 	if err != nil {
 		log.Error(err)
 		return nil, err
@@ -28,7 +28,7 @@ func (u *userRepository) Get(ctx context.Context) ([]model.User, error) {
 
 	for rows.Next() {
 		user := model.User{}
-		err = rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Occupation, &user.HashPassword, &user.AvatarFileName, &user.Role, &user.Token, &user.CreatedAt, &user.UpdatedAt)
+		err = rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Occupation, &user.AvatarFileName, &user.Role, &user.Token, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			log.Error(err)
 			return nil, err
@@ -43,7 +43,7 @@ func (u *userRepository) Get(ctx context.Context) ([]model.User, error) {
 func (u *userRepository) GetByEmail(ctx context.Context, email string) (model.User, error) {
 	var user model.User
 
-	rows, err := u.DB.QueryContext(ctx, "SELECT id, name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at FROM user WHERE email = ?", email)
+	rows, err := u.DB.QueryContext(ctx, "SELECT id, name, email, password, occupation, avatar_file_name, role, token, created_at, updated_at FROM user WHERE email = ?", email)
 	if err != nil {
 		log.Error(err)
 		return user, err
@@ -51,7 +51,7 @@ func (u *userRepository) GetByEmail(ctx context.Context, email string) (model.Us
 	defer rows.Close()
 
 	for rows.Next() {
-		err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Occupation, &user.HashPassword, &user.AvatarFileName, &user.Role, &user.Token, &user.CreatedAt, &user.UpdatedAt)
+		err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Password, &user.Occupation, &user.AvatarFileName, &user.Role, &user.Token, &user.CreatedAt, &user.UpdatedAt)
 		if err != nil {
 			log.Error(err)
 			return user, err
@@ -62,8 +62,8 @@ func (u *userRepository) GetByEmail(ctx context.Context, email string) (model.Us
 }
 
 func (u *userRepository) Save(c context.Context, user *model.User) (int64, error) {
-	query := `INSERT INTO user(name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at) VALUE (?,?,?,?,?,?,?,?,?,?)`
-	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.Password, user.AvatarFileName, user.Role, user.Token, user.CreatedAt, user.UpdatedAt)
+	query := `INSERT INTO user(name, email, password, occupation, avatar_file_name, role, token) VALUE (?,?,?,?,?,?,?)`
+	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.AvatarFileName, user.Role, user.Token)
 	if err != nil {
 		log.Error(err)
 		return 0, err
@@ -73,8 +73,8 @@ func (u *userRepository) Save(c context.Context, user *model.User) (int64, error
 }
 
 func (u *userRepository) Update(c context.Context, id int64, user *model.User) (int64, error) {
-	query := `UPDATE user SET name=?, email=?, password=?, occupation=?, hash_password=?, avatar_file_name=?, role=?, token=?, updated_at=? WHERE id = ?`
-	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.Password, user.AvatarFileName, user.Role, user.Token, user.UpdatedAt, id)
+	query := `UPDATE user SET name=?, email=?, password=?, occupation=?, avatar_file_name=?, role=?, token=?, updated_at=? WHERE id = ?`
+	res, err := u.DB.ExecContext(c, query, user.Name, user.Email, user.Password, user.Occupation, user.AvatarFileName, user.Role, user.Token, user.UpdatedAt, id)
 	if err != nil {
 		log.Error(err)
 		return 0, err

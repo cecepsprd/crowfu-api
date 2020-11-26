@@ -7,8 +7,6 @@ import (
 	"github.com/cecepsprd/crowfu-api/internal/model"
 	"github.com/cecepsprd/crowfu-api/internal/service"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
-	"github.com/spf13/viper"
 )
 
 type AuthHandler struct {
@@ -21,10 +19,6 @@ func NewAuthHandler(e *echo.Echo, as service.AuthService) {
 	}
 	e.POST("/v1/signin", handler.Login)
 }
-
-var Authentication = middleware.JWTWithConfig(middleware.JWTConfig{
-	SigningKey: []byte(viper.GetString("secret_key")),
-})
 
 func (h *AuthHandler) Login(c echo.Context) error {
 	ctx := c.Request().Context()

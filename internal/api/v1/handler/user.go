@@ -8,18 +8,23 @@ import (
 	"github.com/cecepsprd/crowfu-api/internal/model"
 	"github.com/cecepsprd/crowfu-api/internal/service"
 	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
 )
 
 type UserHandler struct {
 	userService service.UserService
 }
 
+var Authentication = middleware.JWTWithConfig(middleware.JWTConfig{
+	SigningKey: []byte("CECEPSPRD"),
+})
+
 func NewUserHandler(e *echo.Echo, us service.UserService) {
 	handler := &UserHandler{
 		userService: us,
 	}
 	e.GET("/v1/users", handler.GetListUser, Authentication)
-	e.POST("/v1/users", handler.CreateUser, Authentication)
+	e.POST("/v1/users", handler.CreateUser)
 	e.PUT("/v1/users/:id", handler.UpdateUser, Authentication)
 	e.DELETE("/v1/users/:id", handler.DeleteUser, Authentication)
 }

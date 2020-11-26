@@ -8,14 +8,13 @@ import (
 	"github.com/cecepsprd/crowfu-api/internal/model"
 	"github.com/cecepsprd/crowfu-api/internal/repository"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type authService struct {
 	userRepo repository.UserRepository
 }
-
-var SECRET_KEY = []byte("CECEPSPRD")
 
 func NewService(userRepo repository.UserRepository) *authService {
 	return &authService{userRepo}
@@ -34,7 +33,7 @@ func (s *authService) Login(c context.Context, email string, password string) (m
 		return user, errors.New("404")
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.HashPassword), []byte(password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return user, err
 	}
@@ -48,7 +47,9 @@ func (s *authService) GenerateToken(userID int64) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
-	signedToken, err := token.SignedString(SECRET_KEY)
+	secret_key := viper.GetString("secret_key")
+
+	signedToken, err := token.SignedString([]byte(secret_key))
 	if err != nil {
 		return signedToken, err
 	}
@@ -62,7 +63,7 @@ func (s *authService) ValidateToken(token string) (*jwt.Token, error) {
 			return nil, errors.New("Invalid token")
 		}
 
-		return []byte(SECRET_KEY), nil
+		return []byte(viper.GetString("secret_key")), nil
 	})
 
 	if err != nil {

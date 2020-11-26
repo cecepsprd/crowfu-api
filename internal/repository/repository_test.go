@@ -21,7 +21,6 @@ var User = []model.User{
 		Name:           "Elon Musk",
 		Password:       "123",
 		Occupation:     "Software Engineer",
-		HashPassword:   "123",
 		Email:          "elon@spacex.com",
 		AvatarFileName: "elon.jpg",
 		Role:           "superadmin",
@@ -37,8 +36,8 @@ func TestGet(t *testing.T) {
 		fmt.Println(err)
 	}
 	// qry := "SELECT id, name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at FROM user"
-	rows := sqlmock.NewRows([]string{"id", "name", "email", "password", "occupation", "hash_password", "avatar_file_name", "role", "token", "created_at", "updated_at"}).
-		AddRow(User[0].ID, User[0].Name, User[0].Email, User[0].Password, User[0].Occupation, User[0].HashPassword, User[0].AvatarFileName, User[0].Role, User[0].Token, NOW, NOW)
+	rows := sqlmock.NewRows([]string{"id", "name", "email", "password", "occupation", "avatar_file_name", "role", "token", "created_at", "updated_at"}).
+		AddRow(User[0].ID, User[0].Name, User[0].Email, User[0].Password, User[0].Occupation, User[0].AvatarFileName, User[0].Role, User[0].Token, NOW, NOW)
 
 	mock.ExpectQuery("^SELECT (.+) FROM user").WillReturnRows(rows)
 
@@ -58,10 +57,10 @@ func TestSave(t *testing.T) {
 		fmt.Println(err)
 	}
 
-	qry := "INSERT INTO user\\(name, email, password, occupation, hash_password, avatar_file_name, role, token, created_at, updated_at\\) VALUE \\(\\\\?,\\?,\\?,\\?,\\?,\\?,\\?,\\?,\\?,\\?\\)"
+	qry := "INSERT INTO user\\(name, email, password, occupation, avatar_file_name, role, token\\) VALUE \\(\\?,\\?,\\?,\\?,\\?,\\?,\\?\\)"
 
 	mock.ExpectExec(qry).
-		WithArgs(User[0].Name, User[0].Email, User[0].Password, User[0].Occupation, User[0].Password, User[0].AvatarFileName, User[0].Role, User[0].Token, User[0].CreatedAt, User[0].UpdatedAt).
+		WithArgs(User[0].Name, User[0].Email, User[0].Password, User[0].Occupation, User[0].AvatarFileName, User[0].Role, User[0].Token).
 		WillReturnResult(sqlmock.NewResult(10, 1))
 
 	repo := repository.NewUserRepository(db)
@@ -79,10 +78,10 @@ func TestUpdate(t *testing.T) {
 		fmt.Println(err)
 	}
 
-	qry := "UPDATE user SET name=\\?, email=\\?, password=\\?, occupation=\\?, hash_password=\\?, avatar_file_name=\\?, role=\\?, token=\\?, updated_at=\\? WHERE id = \\?"
+	qry := "UPDATE user SET name=\\?, email=\\?, password=\\?, occupation=\\?, avatar_file_name=\\?, role=\\?, token=\\?, updated_at=\\? WHERE id = \\?"
 
 	mock.ExpectExec(qry).
-		WithArgs(User[0].Name, User[0].Email, User[0].Password, User[0].Occupation, User[0].HashPassword, User[0].AvatarFileName, User[0].Role, User[0].Token, User[0].UpdatedAt, userID).
+		WithArgs(User[0].Name, User[0].Email, User[0].Password, User[0].Occupation, User[0].AvatarFileName, User[0].Role, User[0].Token, User[0].UpdatedAt, userID).
 		WillReturnResult(sqlmock.NewResult(userID, 1))
 
 	repo := repository.NewUserRepository(db)
